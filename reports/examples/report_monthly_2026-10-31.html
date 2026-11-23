@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport mensuel de sécurité des données — 2026-10-01 → 2026-10-31</title>
+<style>
+  :root { --ink:#1f2933; --muted:#616e7c; --line:#d9e2ec; --bg:#ffffff; --soft:#f5f7fa;
+          --green:#2f9e44; --amber:#e8890c; --red:#d64545; --accent:#2b4c7e; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color:var(--ink); background:var(--bg);
+         max-width: 1100px; margin: 2rem auto; padding: 0 1rem; line-height:1.45; }
+  h1 { font-size:1.6rem; margin-bottom:.2rem; color:var(--accent); }
+  h2 { font-size:1.15rem; margin-top:2rem; border-bottom:2px solid var(--line); padding-bottom:.3rem; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .badge { display:inline-block; padding:.1rem .5rem; border-radius:.6rem; font-size:.8rem; color:#fff; }
+  .vert { background:var(--green); } .orange { background:var(--amber); } .rouge { background:var(--red); }
+  .fictive { background:#fff4e5; border-left:4px solid var(--amber); padding:.4rem .8rem; font-size:.9rem; }
+  table { border-collapse:collapse; width:100%; font-size:.86rem; margin-top:.5rem; }
+  th, td { border-bottom:1px solid var(--line); padding:.35rem .5rem; text-align:left; vertical-align:top; }
+  th { background:var(--soft); }
+  td.num { text-align:right; font-variant-numeric: tabular-nums; }
+  .amelioration { color:var(--green); } .degradation { color:var(--red); }
+  code { font-size:.8rem; word-break:break-all; }
+  ol.summary li { margin:.25rem 0; }
+  @media print { body { margin:0; } h2 { page-break-after: avoid; } }
+</style>
+</head>
+<body>
+<h1>Rapport mensuel de sécurité des données</h1>
+<div class="meta">Période : <strong>2026-10-01 → 2026-10-31</strong> · comparée à la période débutant le 2026-09-01
+  · généré le 2026-11-24 00:36</div>
+<p class="fictive">Données <strong>fictives</strong> issues de la simulation : aucun chiffre ne décrit une organisation réelle.</p>
+
+<h2>1. Synthèse direction</h2>
+<ol class="summary"><li>Indice de risque : 17.3 (↓ 18.4 vs période précédente, orange) ; entité la plus exposée : ASS.</li><li>57 incidents à traiter, dont 14 hors SLA (P1 hors SLA : 1).</li><li>Sur la période : 96 nouveaux incidents, 147 remédiations ; 731 alertes brutes consolidées (réduction du bruit 65.8%).</li><li>Indicateurs au rouge : Respect des SLA, Enregistrements personnels non chiffrés, Secrets exposés non révoqués.</li><li>Qualité : taux de faux positifs 19%, règle la plus bruyante VB-102 (32.4 % de FP).</li></ol>
+
+<h2>2. KPI / KRI vs période précédente</h2>
+<table>
+  <tr><th>Type</th><th>Indicateur</th><th>Période</th><th>Précédente</th><th>Tendance</th><th>Statut</th></tr>
+  
+  <tr><td>KPI</td><td title="(entité × périmètre) scannés sur la période / (entité × périmètre) attendus (config.scope)">Couverture des périmètres</td>
+      <td class="num">93.3%</td><td class="num">93.3%</td>
+      <td class="">→ </td>
+      <td><span class="badge orange">orange</span></td></tr>
+  
+  <tr><td>KPI</td><td title="nb d&#39;observations normalisées reçues sur la période (toutes sources)">Alertes brutes reçues</td>
+      <td class="num">731</td><td class="num">882</td>
+      <td class="">↓ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="1 − incidents distincts / alertes brutes (sur la même fenêtre)">Réduction du bruit</td>
+      <td class="num">65.8%</td><td class="num">70%</td>
+      <td class="">↓ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="incidents créés sur la période">Nouveaux incidents</td>
+      <td class="num">96</td><td class="num">220</td>
+      <td class="">↓ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="passages au statut Remédiée sur la période">Remédiations</td>
+      <td class="num">147</td><td class="num">113</td>
+      <td class="">↑ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="incidents « Faux positif » / incidents qualifiés (Remédiée + Faux positif + Exception)">Taux de faux positifs</td>
+      <td class="num">19%</td><td class="num">28%</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge orange">orange</span></td></tr>
+  
+  <tr><td>KPI</td><td title="moyenne (date de remédiation − date d&#39;ouverture du cycle), cycles remédiés">MTTR moyen</td>
+      <td class="num">13.8 j</td><td class="num">10.3 j</td>
+      <td class="">↑ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="médiane du même délai">MTTR médian</td>
+      <td class="num">10.3 j</td><td class="num">8.9 j</td>
+      <td class="">↑ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="cycles remédiés avant l&#39;échéance SLA / cycles remédiés">Respect des SLA</td>
+      <td class="num">74.2%</td><td class="num">77.9%</td>
+      <td class="dégradation">↓ dégradation</td>
+      <td><span class="badge rouge">rouge</span></td></tr>
+  
+  <tr><td>KPI</td><td title="incidents Ouverte + Assignée + En cours à la date">Backlog à traiter</td>
+      <td class="num">57</td><td class="num">111</td>
+      <td class="">↓ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="moyenne (date − ouverture du cycle) des incidents à traiter">Âge moyen du backlog</td>
+      <td class="num">22.5 j</td><td class="num">13.7 j</td>
+      <td class="">↑ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="incidents à traiter dont l&#39;échéance SLA est dépassée">Incidents ouverts hors SLA</td>
+      <td class="num">14</td><td class="num">18</td>
+      <td class="">↓ </td>
+      <td></td></tr>
+  
+  <tr><td>KPI</td><td title="transitions Remédiée → Ouverte (re-détection) / remédiations">Taux de réouverture</td>
+      <td class="num">5.8%</td><td class="num">3.5%</td>
+      <td class="dégradation">↑ dégradation</td>
+      <td><span class="badge orange">orange</span></td></tr>
+  
+  <tr><td>KRI</td><td title="actifs distincts C3 avec un incident à traiter « exposition publique » ou « partage externe »">Actifs C3 exposés public / externe</td>
+      <td class="num">2</td><td class="num">3</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge vert">vert</span></td></tr>
+  
+  <tr><td>KRI</td><td title="Σ enregistrements (dédupliqués par actif) des incidents « non chiffré » sur données personnelles / bancaires / art. 9">Enregistrements personnels non chiffrés</td>
+      <td class="num">465 849</td><td class="num">697 120</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge rouge">rouge</span></td></tr>
+  
+  <tr><td>KRI</td><td title="incidents « secret exposé » à traiter">Secrets exposés non révoqués</td>
+      <td class="num">5</td><td class="num">10</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge rouge">rouge</span></td></tr>
+  
+  <tr><td>KRI</td><td title="incidents « hors rétention » à traiter">Données hors durée de conservation</td>
+      <td class="num">6</td><td class="num">12</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge orange">orange</span></td></tr>
+  
+  <tr><td>KRI</td><td title="incidents P1 à traiter dont l&#39;échéance est dépassée">Incidents P1 hors SLA</td>
+      <td class="num">1</td><td class="num">4</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge orange">orange</span></td></tr>
+  
+  <tr><td>KRI</td><td title="Σ scores des incidents à traiter / 100 (1 point ≈ 1 incident de score 100)">Indice de risque</td>
+      <td class="num">17.3</td><td class="num">35.7</td>
+      <td class="amélioration">↓ amélioration</td>
+      <td><span class="badge orange">orange</span></td></tr>
+  
+  <tr><td>KRI</td><td title="incidents en « Exception acceptée » à la date">Risques acceptés (exceptions)</td>
+      <td class="num">7</td><td class="num">7</td>
+      <td class="">→ </td>
+      <td></td></tr>
+  
+</table>
+
+
+
+<h2>3. Top incidents P1 / P2 à traiter</h2>
+
+
+<table>
+  <tr><th>#</th><th>Prio</th><th>Score</th><th>Type</th><th>Entité</th><th>Actif</th><th>Propriétaire</th>
+      <th>Statut</th><th>Échéance</th><th>Sources</th></tr>
+  
+  <tr><td>243</td><td>P1</td><td class="num">60.0</td><td>Secret exposé</td>
+      <td>BQA</td><td><code>bqa-my.sharepoint.test/personal/f_mercier/documents/note_interne_031.docx</code></td><td>f.mercier@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-30</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>211</td><td>P2</td><td class="num">49.7</td><td>Partage externe</td>
+      <td>BQB</td><td><code>bqb-my.sharepoint.test/personal/h_lambert/documents/config_deploiement_026.yaml</code></td><td>h.lambert@bqb.test</td><td>Ouverte</td>
+      <td>2026-09-28</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>148</td><td>P2</td><td class="num">48.6</td><td>Données non chiffrées</td>
+      <td>BQA</td><td><code>srv-bqa-fic01/marketing/dossiers_salaries_000.xlsx</code></td><td>a.moreau@bqa.test</td><td>En cours</td>
+      <td>2026-10-25</td>
+      <td>datashield, dspm_vendor_b</td></tr>
+  
+  <tr><td>367</td><td>P2</td><td class="num">48.3</td><td>Partage externe</td>
+      <td>BQB</td><td><code>bqb.sharepoint.test/sites/it/dossiers_salaries_006.xlsx</code></td><td>l.masson@bqb.test</td><td>Assignée</td>
+      <td>2026-11-06</td>
+      <td>datashield, dspm_vendor_a</td></tr>
+  
+  <tr><td>36</td><td>P2</td><td class="num">48.2</td><td>Secret exposé</td>
+      <td>BQA</td><td><code>bqa.sharepoint.test/sites/finance/dossiers_salaries_027.xlsx</code></td><td>d.roux@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-07</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>165</td><td>P2</td><td class="num">48.0</td><td>Partage externe</td>
+      <td>BQA</td><td><code>bqa-my.sharepoint.test/personal/d_roux/documents/annuaire_clients_005.xlsx</code></td><td>d.roux@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-21</td>
+      <td>datashield, dspm_vendor_a</td></tr>
+  
+  <tr><td>151</td><td>P2</td><td class="num">47.3</td><td>Compte inactif avec droits</td>
+      <td>ASS</td><td><code>ass.sharepoint.test/sites/conformite/export_cartes_027.csv</code></td><td>m.henry@ass.test</td><td>Ouverte</td>
+      <td>2026-09-18</td>
+      <td>datashield</td></tr>
+  
+  <tr><td>359</td><td>P2</td><td class="num">45.8</td><td>Données non chiffrées</td>
+      <td>ASS</td><td><code>sql-ass-02/juridique_db/dbo.comptes_007</code></td><td>q.blanc@ass.test</td><td>En cours</td>
+      <td>2026-11-04</td>
+      <td>dspm_vendor_b</td></tr>
+  
+  <tr><td>362</td><td>P2</td><td class="num">45.6</td><td>Groupe trop large</td>
+      <td>ASS</td><td><code>srv-ass-fic03/conformite/dossiers_salaries_016.xlsx</code></td><td>n.garnier@ass.test</td><td>Ouverte</td>
+      <td>2026-11-04</td>
+      <td>datashield, dspm_vendor_b</td></tr>
+  
+  <tr><td>123</td><td>P2</td><td class="num">45.4</td><td>Groupe trop large</td>
+      <td>BQB</td><td><code>srv-bqb-fic03/conformite/arrets_maladie_010.pdf</code></td><td>k.robin@bqb.test</td><td>Ouverte</td>
+      <td>2026-09-09</td>
+      <td>dspm_vendor_b</td></tr>
+  
+</table>
+
+
+
+<h2>4. Dépassements de SLA (14 incidents à traiter hors délai)</h2>
+
+
+<table>
+  <tr><th>#</th><th>Prio</th><th>Score</th><th>Type</th><th>Entité</th><th>Actif</th><th>Propriétaire</th>
+      <th>Statut</th><th>Échéance</th><th>Retard (j)</th><th>Sources</th></tr>
+  
+  <tr><td>243</td><td>P1</td><td class="num">60.0</td><td>Secret exposé</td>
+      <td>BQA</td><td><code>bqa-my.sharepoint.test/personal/f_mercier/documents/note_interne_031.docx</code></td><td>f.mercier@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-30</td><td class="num">31.9</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>36</td><td>P2</td><td class="num">48.2</td><td>Secret exposé</td>
+      <td>BQA</td><td><code>bqa.sharepoint.test/sites/finance/dossiers_salaries_027.xlsx</code></td><td>d.roux@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-07</td><td class="num">54.9</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>123</td><td>P2</td><td class="num">45.4</td><td>Groupe trop large</td>
+      <td>BQB</td><td><code>srv-bqb-fic03/conformite/arrets_maladie_010.pdf</code></td><td>k.robin@bqb.test</td><td>Ouverte</td>
+      <td>2026-09-09</td><td class="num">52.9</td>
+      <td>dspm_vendor_b</td></tr>
+  
+  <tr><td>151</td><td>P2</td><td class="num">47.3</td><td>Compte inactif avec droits</td>
+      <td>ASS</td><td><code>ass.sharepoint.test/sites/conformite/export_cartes_027.csv</code></td><td>m.henry@ass.test</td><td>Ouverte</td>
+      <td>2026-09-18</td><td class="num">43.9</td>
+      <td>datashield</td></tr>
+  
+  <tr><td>165</td><td>P2</td><td class="num">48.0</td><td>Partage externe</td>
+      <td>BQA</td><td><code>bqa-my.sharepoint.test/personal/d_roux/documents/annuaire_clients_005.xlsx</code></td><td>d.roux@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-21</td><td class="num">40.9</td>
+      <td>datashield, dspm_vendor_a</td></tr>
+  
+  <tr><td>211</td><td>P2</td><td class="num">49.7</td><td>Partage externe</td>
+      <td>BQB</td><td><code>bqb-my.sharepoint.test/personal/h_lambert/documents/config_deploiement_026.yaml</code></td><td>h.lambert@bqb.test</td><td>Ouverte</td>
+      <td>2026-09-28</td><td class="num">33.9</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>249</td><td>P2</td><td class="num">45.4</td><td>Groupe trop large</td>
+      <td>ASS</td><td><code>sql-ass-01/it_db/dbo.app_users_025</code></td><td>r.guerin@ass.test</td><td>Ouverte</td>
+      <td>2026-10-07</td><td class="num">24.9</td>
+      <td>dspm_vendor_b</td></tr>
+  
+  <tr><td>148</td><td>P2</td><td class="num">48.6</td><td>Données non chiffrées</td>
+      <td>BQA</td><td><code>srv-bqa-fic01/marketing/dossiers_salaries_000.xlsx</code></td><td>a.moreau@bqa.test</td><td>En cours</td>
+      <td>2026-10-25</td><td class="num">6.3</td>
+      <td>datashield, dspm_vendor_b</td></tr>
+  
+  <tr><td>19</td><td>P3</td><td class="num">28.6</td><td>Secret exposé</td>
+      <td>BQA</td><td><code>bqa-my.sharepoint.test/personal/a_moreau/documents/note_interne_033.docx</code></td><td>a.moreau@bqa.test</td><td>Ouverte</td>
+      <td>2026-09-30</td><td class="num">31.9</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>22</td><td>P3</td><td class="num">28.6</td><td>Données hors durée de conservation (RGPD art. 5)</td>
+      <td>BQA</td><td><code>bqa-my.sharepoint.test/personal/d_roux/documents/annuaire_clients_017.xlsx</code></td><td>d.roux@bqa.test</td><td>En cours</td>
+      <td>2026-09-30</td><td class="num">31.9</td>
+      <td>datashield, dspm_vendor_a</td></tr>
+  
+  <tr><td>51</td><td>P3</td><td class="num">34.3</td><td>Partage externe</td>
+      <td>BQB</td><td><code>bqb.sharepoint.test/sites/marketing/annuaire_clients_022.xlsx</code></td><td>j.chevalier@bqb.test</td><td>Ouverte</td>
+      <td>2026-09-30</td><td class="num">31.9</td>
+      <td>dspm_vendor_a</td></tr>
+  
+  <tr><td>247</td><td>P3</td><td class="num">38.6</td><td>Groupe trop large</td>
+      <td>BQA</td><td><code>bqa.sharepoint.test/sites/it/arrets_maladie_017.pdf</code></td><td>e.fournier@bqa.test</td><td>Ouverte</td>
+      <td>2026-10-30</td><td class="num">1.9</td>
+      <td>dspm_vendor_b</td></tr>
+  
+  <tr><td>255</td><td>P3</td><td class="num">37.4</td><td>Compte inactif avec droits</td>
+      <td>ASS</td><td><code>sql-ass-02/marketing_db/dbo.comptes_033</code></td><td>p.andre@ass.test</td><td>En cours</td>
+      <td>2026-10-30</td><td class="num">1.9</td>
+      <td>dspm_vendor_b</td></tr>
+  
+  <tr><td>268</td><td>P3</td><td class="num">38.0</td><td>Données hors durée de conservation (RGPD art. 5)</td>
+      <td>BQB</td><td><code>sql-bqb-02/juridique_db/dbo.salaries_002</code></td><td>g.bonnet@bqb.test</td><td>En cours</td>
+      <td>2026-10-30</td><td class="num">1.9</td>
+      <td>dspm_vendor_b</td></tr>
+  
+</table>
+
+
+
+<h2>5. Règles les plus bruyantes</h2>
+<table>
+  <tr><th>Règle</th><th>Incidents qualifiés</th><th>Faux positifs</th><th>Taux FP</th></tr>
+  
+  <tr><td>VB-102</td><td class="num">68</td><td class="num">22</td>
+      <td class="num">32.4 %</td></tr>
+  
+  <tr><td>VA-SEC-01</td><td class="num">38</td><td class="num">18</td>
+      <td class="num">47.4 %</td></tr>
+  
+  <tr><td>VB-105</td><td class="num">22</td><td class="num">10</td>
+      <td class="num">45.5 %</td></tr>
+  
+  <tr><td>VA-EXT-01</td><td class="num">23</td><td class="num">6</td>
+      <td class="num">26.1 %</td></tr>
+  
+  <tr><td>DS-inactive_accounts</td><td class="num">13</td><td class="num">3</td>
+      <td class="num">23.1 %</td></tr>
+  
+</table>
+
+<h2>6. Recommandations</h2>
+<ul><li>Escalader les 1 incident(s) P1 hors SLA auprès des propriétaires et du RSSI.</li><li>Révoquer et faire tourner les 5 secret(s) exposé(s), puis purger les fichiers et l&#39;historique qui les contiennent.</li><li>Prioriser le chiffrement des stockages portant 465 849 enregistrements personnels non chiffrés (RGPD art. 32).</li><li>Supprimer les liens publics / partages externes sur les 2 actif(s) C3 concernés.</li><li>Lancer l&#39;archivage ou la purge des 6 jeu(x) de données hors durée de conservation (RGPD art. 5.1.e).</li><li>Demander à l&#39;équipe outillage DSPM de revoir la règle VB-102 (32.4 % de faux positifs sur 68 incidents qualifiés).</li><li>Demander à l&#39;équipe outillage DSPM de revoir la règle VA-SEC-01 (47.4 % de faux positifs sur 38 incidents qualifiés).</li><li>Demander à l&#39;équipe outillage DSPM de revoir la règle VB-105 (45.5 % de faux positifs sur 22 incidents qualifiés).</li><li>Demander à l&#39;équipe outillage DSPM de revoir la règle VA-EXT-01 (26.1 % de faux positifs sur 23 incidents qualifiés).</li><li>Étendre la couverture (actuellement 93.3%) aux périmètres non scannés.</li><li>Revoir les 1 exception(s) qui expirent dans les 30 jours.</li></ul>
+
+<h2>Annexe — Méthodologie</h2>
+<ul>
+  <li>Sources : 2 exports d'éditeurs DSPM simulés (JSON, CSV) + export DataShield DSPM Lab ;
+      33 lignes en quarantaine (rejetées avec motif, jamais perdues).</li>
+  <li>Consolidation : empreinte sha256(chemin canonique | type d'alerte) ; attributs retenus au plus défavorable.</li>
+  <li>Score : 80 × sensibilité × exposition × volume + bonus, borné à 100 ;
+      seuils P1 ≥ 60, P2 ≥ 45, P3 ≥ 28, P4 ≥ 0.</li>
+  <li>SLA : P1 = 2 j, P2 = 7 j, P3 = 30 j, P4 = 90 j.</li>
+  <li>Flux sur la période ; stocks à la fin de période ; qualité (FP, MTTR, SLA) cumulée depuis le début.</li>
+</ul>
+<table>
+  <tr><th>Indicateur</th><th>Type</th><th>Formule</th><th>Pourquoi</th></tr>
+  
+  <tr><td>Couverture des périmètres</td><td>KPI</td><td>(entité × périmètre) scannés sur la période / (entité × périmètre) attendus (config.scope)</td><td>Un risque non scanné est invisible : sans couverture, les KRI sont optimistes.</td></tr>
+  
+  <tr><td>Alertes brutes reçues</td><td>KPI</td><td>nb d&#39;observations normalisées reçues sur la période (toutes sources)</td><td>Mesure la charge entrante avant consolidation.</td></tr>
+  
+  <tr><td>Réduction du bruit</td><td>KPI</td><td>1 − incidents distincts / alertes brutes (sur la même fenêtre)</td><td>Montre ce que la déduplication épargne aux analystes.</td></tr>
+  
+  <tr><td>Nouveaux incidents</td><td>KPI</td><td>incidents créés sur la période</td><td>Flux entrant de risques.</td></tr>
+  
+  <tr><td>Remédiations</td><td>KPI</td><td>passages au statut Remédiée sur la période</td><td>Flux sortant : capacité de traitement.</td></tr>
+  
+  <tr><td>Taux de faux positifs</td><td>KPI</td><td>incidents « Faux positif » / incidents qualifiés (Remédiée + Faux positif + Exception)</td><td>Coût du bruit pour les équipes ; pilote le réglage des règles DSPM.</td></tr>
+  
+  <tr><td>MTTR moyen</td><td>KPI</td><td>moyenne (date de remédiation − date d&#39;ouverture du cycle), cycles remédiés</td><td>Vitesse de réduction du risque.</td></tr>
+  
+  <tr><td>MTTR médian</td><td>KPI</td><td>médiane du même délai</td><td>Moins sensible aux quelques dossiers très longs.</td></tr>
+  
+  <tr><td>Respect des SLA</td><td>KPI</td><td>cycles remédiés avant l&#39;échéance SLA / cycles remédiés</td><td>Engagement de délai par priorité (P1 2 j, P2 7 j, P3 30 j, P4 90 j).</td></tr>
+  
+  <tr><td>Backlog à traiter</td><td>KPI</td><td>incidents Ouverte + Assignée + En cours à la date</td><td>Stock de travail.</td></tr>
+  
+  <tr><td>Âge moyen du backlog</td><td>KPI</td><td>moyenne (date − ouverture du cycle) des incidents à traiter</td><td>Un backlog qui vieillit signale un problème de capacité ou d&#39;appropriation.</td></tr>
+  
+  <tr><td>Incidents ouverts hors SLA</td><td>KPI</td><td>incidents à traiter dont l&#39;échéance SLA est dépassée</td><td>À escalader.</td></tr>
+  
+  <tr><td>Taux de réouverture</td><td>KPI</td><td>transitions Remédiée → Ouverte (re-détection) / remédiations</td><td>Qualité des corrections (un lien de partage recréé, un fichier recopié…).</td></tr>
+  
+  <tr><td>Actifs C3 exposés public / externe</td><td>KRI</td><td>actifs distincts C3 avec un incident à traiter « exposition publique » ou « partage externe »</td><td>Scénario de fuite le plus direct sur les données les plus sensibles.</td></tr>
+  
+  <tr><td>Enregistrements personnels non chiffrés</td><td>KRI</td><td>Σ enregistrements (dédupliqués par actif) des incidents « non chiffré » sur données personnelles / bancaires / art. 9</td><td>Ordre de grandeur de l&#39;impact d&#39;une fuite (RGPD art. 32, notification art. 33-34).</td></tr>
+  
+  <tr><td>Secrets exposés non révoqués</td><td>KRI</td><td>incidents « secret exposé » à traiter</td><td>Un secret exposé ouvre un accès direct au SI.</td></tr>
+  
+  <tr><td>Données hors durée de conservation</td><td>KRI</td><td>incidents « hors rétention » à traiter</td><td>Non-conformité RGPD art. 5.1.e et surface d&#39;attaque inutile.</td></tr>
+  
+  <tr><td>Incidents P1 hors SLA</td><td>KRI</td><td>incidents P1 à traiter dont l&#39;échéance est dépassée</td><td>Risque critique connu et non traité dans les délais.</td></tr>
+  
+  <tr><td>Indice de risque</td><td>KRI</td><td>Σ scores des incidents à traiter / 100 (1 point ≈ 1 incident de score 100)</td><td>Agrégat comparable dans le temps et entre entités / périmètres.</td></tr>
+  
+  <tr><td>Risques acceptés (exceptions)</td><td>KRI</td><td>incidents en « Exception acceptée » à la date</td><td>Risque résiduel assumé : à revoir avant expiration.</td></tr>
+  
+</table>
+</body>
+</html>
