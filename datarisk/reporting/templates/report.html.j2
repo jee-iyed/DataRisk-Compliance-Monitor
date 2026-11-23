@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} — {{ start }} → {{ end }}</title>
+<style>
+  :root { --ink:#1f2933; --muted:#616e7c; --line:#d9e2ec; --bg:#ffffff; --soft:#f5f7fa;
+          --green:#2f9e44; --amber:#e8890c; --red:#d64545; --accent:#2b4c7e; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color:var(--ink); background:var(--bg);
+         max-width: 1100px; margin: 2rem auto; padding: 0 1rem; line-height:1.45; }
+  h1 { font-size:1.6rem; margin-bottom:.2rem; color:var(--accent); }
+  h2 { font-size:1.15rem; margin-top:2rem; border-bottom:2px solid var(--line); padding-bottom:.3rem; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .badge { display:inline-block; padding:.1rem .5rem; border-radius:.6rem; font-size:.8rem; color:#fff; }
+  .vert { background:var(--green); } .orange { background:var(--amber); } .rouge { background:var(--red); }
+  .fictive { background:#fff4e5; border-left:4px solid var(--amber); padding:.4rem .8rem; font-size:.9rem; }
+  table { border-collapse:collapse; width:100%; font-size:.86rem; margin-top:.5rem; }
+  th, td { border-bottom:1px solid var(--line); padding:.35rem .5rem; text-align:left; vertical-align:top; }
+  th { background:var(--soft); }
+  td.num { text-align:right; font-variant-numeric: tabular-nums; }
+  .amelioration { color:var(--green); } .degradation { color:var(--red); }
+  code { font-size:.8rem; word-break:break-all; }
+  ol.summary li { margin:.25rem 0; }
+  @media print { body { margin:0; } h2 { page-break-after: avoid; } }
+</style>
+</head>
+<body>
+<h1>{{ title }}</h1>
+<div class="meta">Période : <strong>{{ start }} → {{ end }}</strong> · comparée à la période débutant le {{ prev_start }}
+  · généré le {{ generated_at }}</div>
+<p class="fictive">Données <strong>fictives</strong> issues de la simulation : aucun chiffre ne décrit une organisation réelle.</p>
+
+<h2>1. Synthèse direction</h2>
+<ol class="summary">{% for line in summary %}<li>{{ line }}</li>{% endfor %}</ol>
+
+<h2>2. KPI / KRI vs période précédente</h2>
+<table>
+  <tr><th>Type</th><th>Indicateur</th><th>Période</th><th>Précédente</th><th>Tendance</th><th>Statut</th></tr>
+  {% for r in table %}
+  <tr><td>{{ r.kind }}</td><td title="{{ definitions[r.key].formula }}">{{ r.label }}</td>
+      <td class="num">{{ r.current }}</td><td class="num">{{ r.previous }}</td>
+      <td class="{{ r.judgement }}">{{ r.arrow }} {{ r.judgement }}</td>
+      <td>{% if r.status %}<span class="badge {{ r.status }}">{{ r.status }}</span>{% endif %}</td></tr>
+  {% endfor %}
+</table>
+
+{% macro incidents(rows, overdue=False) %}
+{% if rows %}
+<table>
+  <tr><th>#</th><th>Prio</th><th>Score</th><th>Type</th><th>Entité</th><th>Actif</th><th>Propriétaire</th>
+      <th>Statut</th><th>Échéance</th>{% if overdue %}<th>Retard (j)</th>{% endif %}<th>Sources</th></tr>
+  {% for r in rows %}
+  <tr><td>{{ r.id }}</td><td>{{ r.priority }}</td><td class="num">{{ r.score }}</td><td>{{ r.type }}</td>
+      <td>{{ r.entity }}</td><td><code>{{ r.asset }}</code></td><td>{{ r.owner }}</td><td>{{ r.status }}</td>
+      <td>{{ r.sla_due }}</td>{% if overdue %}<td class="num">{{ r.overdue_days }}</td>{% endif %}
+      <td>{{ r.sources }}</td></tr>
+  {% endfor %}
+</table>
+{% else %}<p><em>Aucun.</em></p>{% endif %}
+{% endmacro %}
+
+<h2>3. Top incidents P1 / P2 à traiter</h2>
+{{ incidents(top_incidents) }}
+
+<h2>4. Dépassements de SLA ({{ n_breaches }} incidents à traiter hors délai)</h2>
+{{ incidents(sla_breaches, True) }}
+
+<h2>5. Règles les plus bruyantes</h2>
+<table>
+  <tr><th>Règle</th><th>Incidents qualifiés</th><th>Faux positifs</th><th>Taux FP</th></tr>
+  {% for r in noisy_rules %}
+  <tr><td>{{ r.rule_id }}</td><td class="num">{{ r.qualified }}</td><td class="num">{{ r.false_positives }}</td>
+      <td class="num">{{ r.fp_rate_pct }} %</td></tr>
+  {% endfor %}
+</table>
+
+<h2>6. Recommandations</h2>
+<ul>{% for r in recommendations %}<li>{{ r }}</li>{% endfor %}</ul>
+
+<h2>Annexe — Méthodologie</h2>
+<ul>
+  <li>Sources : 2 exports d'éditeurs DSPM simulés (JSON, CSV) + export DataShield DSPM Lab ;
+      {{ quarantine }} lignes en quarantaine (rejetées avec motif, jamais perdues).</li>
+  <li>Consolidation : empreinte sha256(chemin canonique | type d'alerte) ; attributs retenus au plus défavorable.</li>
+  <li>Score : {{ cfg.scoring.base_points }} × sensibilité × exposition × volume + bonus, borné à 100 ;
+      seuils {% for k, v in cfg.scoring.priorities.items() %}{{ k }} ≥ {{ v }}{% if not loop.last %}, {% endif %}{% endfor %}.</li>
+  <li>SLA : {% for k, v in cfg.sla_days.items() %}{{ k }} = {{ v }} j{% if not loop.last %}, {% endif %}{% endfor %}.</li>
+  <li>Flux sur la période ; stocks à la fin de période ; qualité (FP, MTTR, SLA) cumulée depuis le début.</li>
+</ul>
+<table>
+  <tr><th>Indicateur</th><th>Type</th><th>Formule</th><th>Pourquoi</th></tr>
+  {% for d in definitions.values() %}
+  <tr><td>{{ d.label }}</td><td>{{ d.kind }}</td><td>{{ d.formula }}</td><td>{{ d.why }}</td></tr>
+  {% endfor %}
+</table>
+</body>
+</html>
