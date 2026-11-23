@@ -1,0 +1,33 @@
+# Environnements / secrets
+.venv/
+venv/
+.env
+.env.*
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Données générées (simulation, base SQLite) : jamais commitées, toujours régénérables
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Rapports générés : seul l'exemple de référence est versionné
+reports/*
+!reports/examples/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+.claude/

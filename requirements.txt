@@ -1,0 +1,10 @@
+# Versions figées (testées avec Python 3.11)
+pandas==3.1.1
+numpy==2.4.6
+PyYAML==6.0.4
+Jinja2==3.1.6
+plotly==7.1.0
+streamlit==1.67.0
+# Dev / tests
+pytest==9.2.0
+ruff==0.17.6
