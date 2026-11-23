@@ -84,7 +84,7 @@ thresholds:
   open_exposed_secrets: {direction: lower_is_better, green: 0, amber: 3}
   retention_exceeded: {direction: lower_is_better, green: 5, amber: 15}
   p1_over_sla: {direction: lower_is_better, green: 0, amber: 2}
-  risk_index: {direction: lower_is_better, green: 40, amber: 80}
+  risk_index: {direction: lower_is_better, green: 15, amber: 25}
   # KPI (performance du dispositif)
   coverage_pct: {direction: higher_is_better, green: 95, amber: 80}
   sla_compliance_pct: {direction: higher_is_better, green: 90, amber: 75}
