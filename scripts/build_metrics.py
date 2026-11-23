@@ -51,6 +51,7 @@ def main() -> None:
     print(f"Quarantaine : {len(frames['rejected_alerts'])} lignes ; taux de FP global {kpi.fp_rate(st)} %")
     print("\nMTTR par priorité (jours) :")
     print(kpi.mttr(cycles).to_string(index=False))
+    print(f"\nRespect des SLA par priorité (%) : {kpi.sla_compliance_by_priority(cycles)}")
     print("\nTaux de FP par source :")
     print(kpi.fp_rate_by(st, isrc, "source_id").to_string(index=False))
     print("\nRègles les plus bruyantes :")

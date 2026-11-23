@@ -103,6 +103,7 @@ def test_mttr_mean_median_and_by_priority(history):
 
 def test_sla_compliance(history):
     assert kpi.sla_compliance(remediation_cycles(history)) == 50.0   # I1 en retard, I2 à l'heure
+    assert kpi.sla_compliance_by_priority(remediation_cycles(history)) == {"P1": 0.0, "P3": 100.0}
 
 
 def test_backlog_and_open_sla_breaches(state):

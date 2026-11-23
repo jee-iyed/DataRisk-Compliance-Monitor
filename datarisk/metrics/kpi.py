@@ -82,6 +82,13 @@ def sla_compliance(cycles: pd.DataFrame) -> float | None:
     return pct((done["closed_at"] <= done["sla_due"]).sum(), len(done))
 
 
+def sla_compliance_by_priority(cycles: pd.DataFrame) -> dict[str, float]:
+    """Respect des SLA détaillé par priorité (révèle un SLA intenable sur une priorité donnée)."""
+    done = cycles[cycles["outcome"] == REMEDIATED]
+    on_time = (done["closed_at"] <= done["sla_due"]).groupby(done["priority"]).mean()
+    return (100 * on_time).round(1).to_dict()
+
+
 def backlog(state: pd.DataFrame, as_of: pd.Timestamp) -> dict:
     """Incidents à traiter (Ouverte / Assignée / En cours) et âge du cycle en cours, en jours."""
     active = state[state["status"].isin(ACTIVE_STATUSES)]
